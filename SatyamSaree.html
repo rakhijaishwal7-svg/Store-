@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>Satyam Saree Store</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  body{background:#100800;color:#f0d090;font-family:Georgia,serif;min-height:100vh;}
+  .app{max-width:480px;margin:0 auto;padding-bottom:80px;}
+  /* Header */
+  .header{background:linear-gradient(135deg,#3d1a00,#5c2a00);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:99;border-bottom:1px solid rgba(255,180,50,0.2);}
+  .header-title{font-size:18px;font-weight:bold;color:#f5c842;}
+  .header-sub{font-size:11px;color:#c8906a;margin-top:2px;}
+  .logout-btn{background:rgba(255,100,50,0.2);border:1px solid rgba(255,100,50,0.4);color:#ff9070;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-family:Georgia,serif;}
+  /* Bottom Nav */
+  .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#1e0c00;border-top:1px solid rgba(255,180,50,0.2);display:flex;z-index:99;}
+  .nav-btn{flex:1;padding:10px 0;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;font-family:Georgia,serif;}
+  .nav-btn span.icon{font-size:22px;}
+  .nav-btn span.label{font-size:11px;}
+  .nav-btn.active span.label{color:#f5c842;font-weight:bold;}
+  .nav-btn.active span.icon{filter:none;}
+  .nav-btn:not(.active) span.label{color:#8a6a4a;}
+  /* Cards */
+  .card{background:rgba(255,180,50,0.04);border:1px solid rgba(255,180,50,0.15);border-radius:16px;padding:16px;margin:12px 12px 0;}
+  .card-title{font-size:15px;font-weight:bold;color:#f5c842;margin-bottom:12px;border-bottom:1px solid rgba(255,180,50,0.15);padding-bottom:10px;}
+  /* Form elements */
+  label{display:block;color:#c8906a;font-size:12px;margin-bottom:4px;margin-top:10px;}
+  input,select{width:100%;padding:10px 12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,180,50,0.2);border-radius:9px;color:#f0d090;font-size:14px;outline:none;font-family:Georgia,serif;}
+  select{background:#1e0c00;}
+  select option{background:#1e0c00;color:#f0d090;}
+  .row{display:flex;gap:10px;}
+  .row>div{flex:1;}
+  .big-btn{width:100%;padding:13px;margin-top:14px;background:linear-gradient(135deg,#c8720a,#f5a623);border:none;border-radius:10px;color:#fff;font-size:15px;font-weight:bold;cursor:pointer;font-family:Georgia,serif;}
+  /* Payment chips */
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:4px;}
+  .chip{padding:6px 14px;border-radius:20px;cursor:pointer;font-size:13px;font-family:Georgia,serif;border:1px solid rgba(255,180,50,0.25);background:transparent;color:#c8906a;}
+  .chip.active{border-color:#f5c842;background:rgba(245,200,66,0.2);color:#f5c842;}
+  /* Total box */
+  .total-box{background:rgba(245,200,66,0.1);border:1px solid rgba(245,200,66,0.3);border-radius:8px;padding:10px 14px;margin-top:8px;color:#f5c842;font-weight:bold;font-size:16px;}
+  /* Alert */
+  .alert{padding:8px 12px;border-radius:8px;margin-bottom:10px;font-size:13px;}
+  .alert.ok{background:rgba(50,200,100,0.15);border:1px solid #50c878;color:#90eeaa;}
+  .alert.err{background:rgba(255,80,80,0.15);border:1px solid #ff6b6b;color:#ffaaaa;}
+  /* Sale/Expense rows */
+  .list-row{border-bottom:1px solid rgba(255,180,50,0.1);padding:10px 0;display:flex;justify-content:space-between;align-items:center;}
+  .list-name{font-weight:bold;font-size:15px;}
+  .list-sub{font-size:12px;color:#8a6a4a;margin-top:2px;}
+  .list-amount{font-weight:bold;font-size:16px;color:#f5c842;}
+  .list-amount.red{color:#ff9070;}
+  .del-btn{background:none;border:none;color:#8a6a4a;cursor:pointer;font-size:18px;padding:0 0 0 8px;}
+  /* Quick chips */
+  .quick-chip{padding:7px 14px;border-radius:20px;border:1px solid rgba(255,180,50,0.3);background:rgba(255,140,30,0.1);color:#f0c060;cursor:pointer;font-size:13px;font-family:Georgia,serif;}
+  /* Reports */
+  .period-bar{display:flex;gap:8px;padding:12px;}
+  .period-btn{flex:1;padding:8px 0;border-radius:10px;cursor:pointer;font-size:13px;font-family:Georgia,serif;}
+  .period-btn.active{border:1px solid #f5c842;background:rgba(245,200,66,0.15);color:#f5c842;}
+  .period-btn:not(.active){border:1px solid rgba(255,180,50,0.2);background:transparent;color:#8a6a4a;}
+  .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 12px 12px;}
+  .stat-card{background:rgba(255,180,50,0.06);border:1px solid rgba(255,180,50,0.15);border-radius:14px;padding:14px 12px;}
+  .stat-icon{font-size:22px;}
+  .stat-val{font-size:20px;font-weight:bold;margin-top:4px;}
+  .stat-label{color:#8a6a4a;font-size:12px;margin-top:2px;}
+  .bar-bg{height:6px;background:rgba(255,180,50,0.1);border-radius:3px;margin-top:4px;}
+  .bar-fill{height:6px;background:linear-gradient(90deg,#f5c842,#c8720a);border-radius:3px;}
+  /* Login */
+  #login-screen{min-height:100vh;background:linear-gradient(135deg,#1a0a00,#3d1a00,#1a0a00);display:flex;align-items:center;justify-content:center;}
+  .login-box{background:rgba(255,220,150,0.07);border:1px solid rgba(255,180,50,0.3);border-radius:20px;padding:40px 36px;width:320px;box-shadow:0 20px 60px rgba(0,0,0,0.5);}
+  .login-logo{text-align:center;margin-bottom:28px;}
+  .login-logo .emoji{font-size:50px;}
+  .login-logo .name{color:#f5c842;font-size:22px;font-weight:bold;letter-spacing:1px;margin-top:8px;}
+  .login-logo .sub{color:#c8906a;font-size:13px;margin-top:4px;}
+  .login-btn{width:100%;padding:13px;margin-top:18px;background:linear-gradient(135deg,#c8720a,#f5a623);border:none;border-radius:10px;color:#fff;font-size:16px;font-weight:bold;cursor:pointer;font-family:Georgia,serif;}
+  .hint{color:#8a6a4a;font-size:11px;text-align:center;margin-top:14px;}
+  .badge{font-size:11px;color:#c8906a;background:rgba(200,100,30,0.15);padding:2px 7px;border-radius:10px;margin-left:4px;}
+  .empty{color:#8a6a4a;text-align:center;padding:28px 0;font-size:14px;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="emoji">🥻</div>
+      <div class="name">Satyam Saree</div>
+      <div class="sub">Store Management</div>
+    </div>
+    <div id="login-err" class="alert err" style="display:none;"></div>
+    <label>Username</label>
+    <input id="inp-user" placeholder="Enter username" autocomplete="off"/>
+    <label style="margin-top:12px;">Password</label>
+    <input id="inp-pass" type="password" placeholder="Enter password"/>
+    <button class="login-btn" onclick="doLogin()">Login</button>
+    <div class="hint">Owner: satyam / 1234 &nbsp;|&nbsp; Staff: staff / staff123</div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="main-app" class="app" style="display:none;">
+  <div class="header">
+    <div>
+      <div class="header-title">🥻 Satyam Saree</div>
+      <div class="header-sub" id="header-user"></div>
+    </div>
+    <button class="logout-btn" onclick="doLogout()">Logout</button>
+  </div>
+
+  <div id="tab-sales" class="tab-content"></div>
+  <div id="tab-expenses" class="tab-content" style="display:none;"></div>
+  <div id="tab-reports" class="tab-content" style="display:none;"></div>
+
+  <div class="bottom-nav">
+    <button class="nav-btn active" id="nav-sales" onclick="switchTab('sales')">
+      <span class="icon">🛍️</span><span class="label">Sales</span>
+    </button>
+    <button class="nav-btn" id="nav-expenses" onclick="switchTab('expenses')">
+      <span class="icon">💸</span><span class="label">Expenses</span>
+    </button>
+    <button class="nav-btn" id="nav-reports" onclick="switchTab('reports')">
+      <span class="icon">📊</span><span class="label">Reports</span>
+    </button>
+  </div>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────
+const KEY = "satyam_store_v1";
+const USERS = [
+  {id:1,username:"satyam",password:"1234",role:"Owner"},
+  {id:2,username:"staff", password:"staff123",role:"Staff"}
+];
+const PRODUCTS = ["Saree","Underwear","Vest","Gamchha","Shirt","Kurta","Dupatta","Lehenga","Blouse","Petticoat","Dhoti","Lungi","Towel","Shorts","Track Pant","Other"];
+const PAYMENTS = ["Cash","Online","UPI","Card","Credit"];
+const EXP_CATS = ["Rent","Electricity","Staff Salary","Transport","Purchase","Maintenance","Other"];
+
+function getData(){
+  try{ return JSON.parse(localStorage.getItem(KEY)) || {sales:[],expenses:[],sessions:[]}; }
+  catch{ return {sales:[],expenses:[],sessions:[]}; }
+}
+function saveData(d){ localStorage.setItem(KEY, JSON.stringify(d)); }
+
+// device id
+function deviceId(){
+  let id = sessionStorage.getItem("dev");
+  if(!id){id=Math.random().toString(36).slice(2)+Date.now();sessionStorage.setItem("dev",id);}
+  return id;
+}
+
+let currentUser = null;
+
+function fmt(n){ return "₹"+Number(n||0).toLocaleString("en-IN"); }
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+
+// ── LOGIN ─────────────────────────────────────────────────────────────────
+function doLogin(){
+  const u = document.getElementById("inp-user").value.trim();
+  const p = document.getElementById("inp-pass").value;
+  const user = USERS.find(x=>x.username===u && x.password===p);
+  const errEl = document.getElementById("login-err");
+  if(!user){ errEl.style.display="block"; errEl.textContent="Wrong username or password."; return; }
+  const d = getData();
+  const dev = deviceId();
+  const active = (d.sessions||[]).filter(s=>s.userId===user.id);
+  const already = active.find(s=>s.deviceId===dev);
+  if(!already && active.length>=2){
+    errEl.style.display="block";
+    errEl.textContent="Already logged in on 2 devices. Ask the other device to logout first.";
+    return;
+  }
+  if(!already){
+    d.sessions = [...(d.sessions||[]), {userId:user.id, deviceId:dev, at:Date.now()}];
+    saveData(d);
+  }
+  currentUser = user;
+  document.getElementById("login-screen").style.display="none";
+  document.getElementById("main-app").style.display="block";
+  document.getElementById("header-user").textContent = "Hi, "+user.username+" ("+user.role+")";
+  switchTab("sales");
+}
+
+document.getElementById("inp-pass").addEventListener("keydown",e=>{ if(e.key==="Enter") doLogin(); });
+
+function doLogout(){
+  const d = getData();
+  d.sessions = (d.sessions||[]).filter(s=>!(s.userId===currentUser.id && s.deviceId===deviceId()));
+  saveData(d);
+  currentUser = null;
+  document.getElementById("login-screen").style.display="flex";
+  document.getElementById("main-app").style.display="none";
+  document.getElementById("inp-user").value="";
+  document.getElementById("inp-pass").value="";
+  document.getElementById("login-err").style.display="none";
+}
+
+// ── TABS ──────────────────────────────────────────────────────────────────
+let activeTab = "sales";
+function switchTab(tab){
+  ["sales","expenses","reports"].forEach(t=>{
+    document.getElementById("tab-"+t).style.display = t===tab?"block":"none";
+    document.getElementById("nav-"+t).className = "nav-btn"+(t===tab?" active":"");
+  });
+  activeTab = tab;
+  if(tab==="sales") renderSales();
+  if(tab==="expenses") renderExpenses();
+  if(tab==="reports") renderReports("today");
+}
+
+// ── SALES ─────────────────────────────────────────────────────────────────
+let saleForm = {product:"Saree",qty:1,cost:"",payment:"Cash",note:"",date:todayStr()};
+
+function recentProducts(){
+  const d = getData();
+  const counts = {};
+  [...d.sales].slice(0,60).forEach(s=>{ counts[s.product]=(counts[s.product]||0)+1; });
+  return Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,10).map(e=>e[0]);
+}
+
+function renderSales(){
+  const recent = recentProducts();
+  const d = getData();
+  const totalVal = (Number(saleForm.qty)||1) * (Number(saleForm.cost)||0);
+
+  document.getElementById("tab-sales").innerHTML = `
+  <div class="card">
+    <div class="card-title">New Sale Entry</div>
+    <div id="sale-msg"></div>
+    <label>Product</label>
+    <select id="s-product" onchange="saleForm.product=this.value;renderSales()">
+      ${PRODUCTS.map(p=>`<option ${saleForm.product===p?"selected":""}>${p}</option>`).join("")}
+    </select>
+    ${saleForm.product==="Other"?`<input id="s-custom" placeholder="Enter product name" value="${saleForm.customProduct||""}" oninput="saleForm.customProduct=this.value" style="margin-top:8px;"/>`:``}
+    <div class="row">
+      <div><label>Quantity</label><input type="number" id="s-qty" min="1" value="${saleForm.qty}" oninput="saleForm.qty=this.value;updateTotal()"/></div>
+      <div><label>Cost (₹)</label><input type="number" id="s-cost" value="${saleForm.cost}" placeholder="0" oninput="saleForm.cost=this.value;updateTotal()"/></div>
+    </div>
+    <label>Payment Method</label>
+    <div class="chips">
+      ${PAYMENTS.map(p=>`<button class="chip ${saleForm.payment===p?"active":""}" onclick="saleForm.payment='${p}';renderSales()">${p==="Cash"?"💵":p==="Online"?"🌐":p==="UPI"?"📱":p==="Card"?"💳":"🏦"} ${p}</button>`).join("")}
+    </div>
+    <label>Date</label>
+    <input type="date" id="s-date" value="${saleForm.date}" oninput="saleForm.date=this.value"/>
+    <label>Note (optional)</label>
+    <input id="s-note" placeholder="Customer name, remark..." value="${saleForm.note}" oninput="saleForm.note=this.value"/>
+    ${saleForm.cost?`<div class="total-box">Total: ${fmt(totalVal)}</div>`:""}
+    <button class="big-btn" onclick="submitSale()">✅ Add Sale</button>
+  </div>
+
+  ${recent.length>0?`
+  <div class="card">
+    <div class="card-title">⚡ Quick Add (Recent Products)</div>
+    <div class="chips">
+      ${recent.map(p=>`<button class="quick-chip" onclick="quickAdd('${p}')">${p}</button>`).join("")}
+    </div>
+  </div>`:""}
+
+  <div class="card">
+    <div class="card-title">Recent Sales</div>
+    ${d.sales.length===0?`<div class="empty">No sales yet</div>`:""}
+    ${d.sales.slice(0,15).map(s=>`
+      <div class="list-row">
+        <div>
+          <div class="list-name">${s.product} <span style="color:#8a6a4a;font-size:12px;">×${s.qty}</span></div>
+          <div class="list-sub">${s.date} · ${s.payment}${s.note?" · "+s.note:""}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <div class="list-amount">${fmt(s.total)}</div>
+          <button class="del-btn" onclick="deleteSale(${s.id})">🗑️</button>
+        </div>
+      </div>`).join("")}
+  </div>`;
+}
+
+function updateTotal(){
+  const qty = Number(document.getElementById("s-qty")?.value||1);
+  const cost = Number(document.getElementById("s-cost")?.value||0);
+  saleForm.qty=qty; saleForm.cost=cost;
+}
+
+function quickAdd(product){
+  saleForm.product = PRODUCTS.includes(product) ? product : "Other";
+  saleForm.customProduct = PRODUCTS.includes(product) ? "" : product;
+  renderSales();
+  setTimeout(()=>document.getElementById("s-cost")?.focus(),100);
+}
+
+function submitSale(){
+  // read live values
+  saleForm.qty = Number(document.getElementById("s-qty")?.value||1);
+  saleForm.cost = document.getElementById("s-cost")?.value;
+  saleForm.date = document.getElementById("s-date")?.value || todayStr();
+  saleForm.note = document.getElementById("s-note")?.value || "";
+  if(saleForm.product==="Other") saleForm.customProduct = document.getElementById("s-custom")?.value?.trim()||"";
+
+  const product = saleForm.product==="Other" ? saleForm.customProduct : saleForm.product;
+  const msgEl = document.getElementById("sale-msg");
+  if(!product){ msgEl.className="alert err"; msgEl.textContent="Enter product name."; msgEl.style.display="block"; return; }
+  if(!saleForm.cost||isNaN(saleForm.cost)||Number(saleForm.cost)<=0){ msgEl.className="alert err"; msgEl.textContent="Enter a valid cost."; msgEl.style.display="block"; return; }
+
+  const sale = {id:Date.now(),product,qty:Number(saleForm.qty)||1,cost:Number(saleForm.cost),payment:saleForm.payment,note:saleForm.note,date:saleForm.date,total:(Number(saleForm.qty)||1)*Number(saleForm.cost)};
+  const d = getData();
+  d.sales.unshift(sale);
+  saveData(d);
+  saleForm = {product:"Saree",qty:1,cost:"",payment:"Cash",note:"",date:todayStr()};
+  renderSales();
+  const m = document.getElementById("sale-msg");
+  m.className="alert ok"; m.textContent="✅ Sale saved successfully!"; m.style.display="block";
+  setTimeout(()=>{ if(m) m.style.display="none"; },2500);
+}
+
+function deleteSale(id){
+  if(!confirm("Delete this sale?")) return;
+  const d = getData();
+  d.sales = d.sales.filter(s=>s.id!==id);
+  saveData(d);
+  renderSales();
+}
+
+// ── EXPENSES ──────────────────────────────────────────────────────────────
+let expForm = {title:"",amount:"",category:"Rent",date:todayStr(),note:""};
+
+function renderExpenses(){
+  const d = getData();
+  document.getElementById("tab-expenses").innerHTML = `
+  <div class="card">
+    <div class="card-title">Add Expense</div>
+    <div id="exp-msg"></div>
+    <label>Title</label>
+    <input id="e-title" placeholder="e.g. Electricity bill" value="${expForm.title}" oninput="expForm.title=this.value"/>
+    <label>Category</label>
+    <select id="e-cat" onchange="expForm.category=this.value">
+      ${EXP_CATS.map(c=>`<option ${expForm.category===c?"selected":""}>${c}</option>`).join("")}
+    </select>
+    <label>Amount (₹)</label>
+    <input type="number" id="e-amount" value="${expForm.amount}" placeholder="0" oninput="expForm.amount=this.value"/>
+    <label>Date</label>
+    <input type="date" id="e-date" value="${expForm.date}" oninput="expForm.date=this.value"/>
+    <label>Note (optional)</label>
+    <input id="e-note" placeholder="Optional remark" value="${expForm.note}" oninput="expForm.note=this.value"/>
+    <button class="big-btn" onclick="submitExpense()">💸 Add Expense</button>
+  </div>
+  <div class="card">
+    <div class="card-title">Recent Expenses</div>
+    ${d.expenses.length===0?`<div class="empty">No expenses yet</div>`:""}
+    ${d.expenses.slice(0,20).map(e=>`
+      <div class="list-row">
+        <div>
+          <div class="list-name">${e.title}<span class="badge">${e.category}</span></div>
+          <div class="list-sub">${e.date}${e.note?" · "+e.note:""}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <div class="list-amount red">${fmt(e.amount)}</div>
+          <button class="del-btn" onclick="deleteExp(${e.id})">🗑️</button>
+        </div>
+      </div>`).join("")}
+  </div>`;
+}
+
+function submitExpense(){
+  expForm.title = document.getElementById("e-title")?.value?.trim()||"";
+  expForm.amount = document.getElementById("e-amount")?.value||"";
+  expForm.category = document.getElementById("e-cat")?.value||"Rent";
+  expForm.date = document.getElementById("e-date")?.value||todayStr();
+  expForm.note = document.getElementById("e-note")?.value||"";
+  const msgEl = document.getElementById("exp-msg");
+  if(!expForm.title){ msgEl.className="alert err"; msgEl.textContent="Enter expense title."; msgEl.style.display="block"; return; }
+  if(!expForm.amount||isNaN(expForm.amount)||Number(expForm.amount)<=0){ msgEl.className="alert err"; msgEl.textContent="Enter a valid amount."; msgEl.style.display="block"; return; }
+  const exp = {id:Date.now(),title:expForm.title,amount:Number(expForm.amount),category:expForm.category,date:expForm.date,note:expForm.note};
+  const d = getData();
+  d.expenses.unshift(exp);
+  saveData(d);
+  expForm = {title:"",amount:"",category:"Rent",date:todayStr(),note:""};
+  renderExpenses();
+  const m = document.getElementById("exp-msg");
+  m.className="alert ok"; m.textContent="✅ Expense saved!"; m.style.display="block";
+  setTimeout(()=>{ if(m) m.style.display="none"; },2500);
+}
+
+function deleteExp(id){
+  if(!confirm("Delete this expense?")) return;
+  const d = getData();
+  d.expenses = d.expenses.filter(e=>e.id!==id);
+  saveData(d);
+  renderExpenses();
+}
+
+// ── REPORTS ───────────────────────────────────────────────────────────────
+let reportPeriod = "today";
+
+function renderReports(period){
+  if(period) reportPeriod = period;
+  const d = getData();
+  const now = todayStr();
+  let weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate()-7);
+  weekAgo = weekAgo.toISOString().slice(0,10);
+  const thisMonth = now.slice(0,7);
+
+  const filterSales = d.sales.filter(s=>{
+    if(reportPeriod==="today") return s.date===now;
+    if(reportPeriod==="week")  return s.date>=weekAgo;
+    if(reportPeriod==="month") return s.date && s.date.slice(0,7)===thisMonth;
+    return true;
+  });
+  const filterExp = d.expenses.filter(e=>{
+    if(reportPeriod==="today") return e.date===now;
+    if(reportPeriod==="week")  return e.date>=weekAgo;
+    if(reportPeriod==="month") return e.date && e.date.slice(0,7)===thisMonth;
+    return true;
+  });
+
+  const totalSales = filterSales.reduce((a,s)=>a+s.total,0);
+  const totalExp   = filterExp.reduce((a,e)=>a+e.amount,0);
+  const profit     = totalSales - totalExp;
+
+  const byProduct = {};
+  filterSales.forEach(s=>{ byProduct[s.product]=(byProduct[s.product]||0)+s.total; });
+  const topProds = Object.entries(byProduct).sort((a,b)=>b[1]-a[1]);
+
+  const byPay = {};
+  filterSales.forEach(s=>{ byPay[s.payment]=(byPay[s.payment]||0)+s.total; });
+
+  document.getElementById("tab-reports").innerHTML = `
+  <div class="period-bar">
+    ${[["today","Today"],["week","7 Days"],["month","Month"],["all","All"]].map(([id,label])=>
+      `<button class="period-btn ${reportPeriod===id?"active":""}" onclick="renderReports('${id}')">${label}</button>`
+    ).join("")}
+  </div>
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-icon">🛍️</div><div class="stat-val" style="color:#50c878">${fmt(totalSales)}</div><div class="stat-label">Total Sales</div></div>
+    <div class="stat-card"><div class="stat-icon">💸</div><div class="stat-val" style="color:#ff9070">${fmt(totalExp)}</div><div class="stat-label">Expenses</div></div>
+    <div class="stat-card"><div class="stat-icon">📈</div><div class="stat-val" style="color:${profit>=0?"#50c878":"#ff6b6b"}">${fmt(profit)}</div><div class="stat-label">Net Profit</div></div>
+    <div class="stat-card"><div class="stat-icon">🧾</div><div class="stat-val" style="color:#87ceeb">${filterSales.length}</div><div class="stat-label">Transactions</div></div>
+  </div>
+
+  ${topProds.length>0?`
+  <div class="card">
+    <div class="card-title">Sales by Product</div>
+    ${topProds.map(([prod,amt])=>`
+      <div style="margin-bottom:12px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:14px;">
+          <span>${prod}</span><span style="color:#f5c842;">${fmt(amt)}</span>
+        </div>
+        <div class="bar-bg"><div class="bar-fill" style="width:${totalSales?Math.round(amt/totalSales*100):0}%"></div></div>
+      </div>`).join("")}
+  </div>`:""}
+
+  ${Object.keys(byPay).length>0?`
+  <div class="card">
+    <div class="card-title">Sales by Payment</div>
+    ${Object.entries(byPay).map(([pay,amt])=>`
+      <div class="list-row">
+        <span style="color:#c8906a;">${pay}</span>
+        <span style="color:#f5c842;font-weight:bold;">${fmt(amt)}</span>
+      </div>`).join("")}
+  </div>`:""}
+
+  ${filterSales.length===0?`<div class="empty" style="margin-top:30px;">No data for this period</div>`:""}`;
+}
+</script>
+</body>
+</html>
